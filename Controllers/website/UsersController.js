@@ -1,35 +1,73 @@
+// Dependencies
+const { cloudinary } = require('./../../helpers/imageUploader')
 const User = require('./../../Models/user')
 
-const updateUser = async (id, name) => {
-    const user_exists = await User.findOne({'_id': id});
+// Show the Logged in User Profile
+const profile = (req, res) => {
+    const auth_user = req.user
 
-    if (!user_exists) throw new Error("User Not Found"); 
-
-    await User.updateOne({ '_id': id }, { 'name': name });
-    
-    user_exists.name = name;
-    user_exists.password = undefined;
-    return user_exists;
+    return res.status(200).send({
+        code: 200,
+        success: true,
+        message: "User data",
+        payload: {
+            user: auth_user
+        }
+    })
 }
 
-const deleteUser = async (id) => {
-    const user_exists = await User.find({'_id': id});
+// Update the logged in user Profile
+const update = async (req, res) => {
+    const auth_user = req.user
+    const { name, email, photo } = req.body
+    let photo_url = false
 
-    if (!user_exists) throw new Error("User Not Found"); 
+    const duplicated_user = await User.findOne({ email: email, _id: { $ne: auth_user._id } })
+    if (duplicated_user) {
+        return res.status(400).send({
+            code: 400,
+            success: false,
+            message: "This Email Has Been Taken Before"
+        })
+    }
 
-    return await User.deleteOne({'_id': id });
+    if (photo) {
+        await cloudinary.uploader.upload(
+            photo,
+            { public_id: `users/${email.split('@')[0]}`}, 
+            (err, result) => {
+                if (err) return
+                photo_url = result.secure_url
+            }
+        );
+    }
+
+    if (photo && !photo_url) {
+        return res.status(400).send({
+            code: 400,
+            success: false,
+            message: "Can't Upload the Image due to error... please try again later"
+        })
+    }
+
+    await User.updateOne({ '_id': auth_user._id }, {
+        name: name,
+        email: email.toLowerCase(),
+        photo: photo_url || ''
+    });
+
+    auth_user.name = name
+    auth_user.email = email
+    auth_user.photo = photo_url || ''
+    return res.status(200).send({
+        code: 200,
+        success: true,
+        message: "Profile Updated Successfully",
+        payload: {
+            user: auth_user
+        }
+    })
 }
 
-const getUser = async (id) => {
-    const user_exists = await User.find({'_id': id});
-
-    if (!user_exists) throw new Error("User Not Found"); 
-
-    return user_exists;
-};
-
-const getAllUsers = async (n) => {
-    return await (User.find().limit(n).select('-password'));
-}
-
-module.exports = { updateUser, deleteUser, getUser, getAllUsers}
+// Export the Fuctions
+module.exports = { profile, update }

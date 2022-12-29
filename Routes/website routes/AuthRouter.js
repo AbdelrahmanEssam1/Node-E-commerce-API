@@ -1,43 +1,15 @@
 const app = require('express')
 const router = app.Router()
+const { login, register } = require('./../../Controllers/website/AuthController')
+const { forgetPassword, resetPassword } = require('./../../Controllers/website/forgetPasswordController')
+const { mustBeGuest } = require('../../Middlewares/guestMiddleware')
 
+router.post('/login', mustBeGuest, login);
 
-router.get('/login', (req, res) => {
-    const { email, password } = req.query;
+router.post('/register', mustBeGuest, register);
 
-    if (!email || !password) {
-        error = { error: "no email or password" };
-        console.log(`error`, error);
-        return res.status(401).send(error);
-}
+router.post('/forget-password', mustBeGuest, forgetPassword);
 
-login({ email, password })
-    .then(user => {
-    console.log('user', user);
-    return res.status(200).send(user);
-    })
-    .catch(err => {
-    console.log(`err`, err.message);
-    return res.status(401).send({ error: err.message });
-    });
-});
-
-
-
-router.get('/register', (req, res) => {
-    const { name, email, password } = req.query;
-    if (!name || !email || !password) {
-        return res.status(401).send({ error: "missing user data" });
-    }
-    register({ name, email, password })
-        .then(user => {
-        console.log(`Added user`, user);
-        return res.status(200).send(user);
-        })
-        .catch(err => {
-        console.log(`err`, err);
-        return res.status(401).send({ error: err.message });
-        });
-});
+router.post('/reset-password', mustBeGuest, resetPassword);
 
 module.exports = router

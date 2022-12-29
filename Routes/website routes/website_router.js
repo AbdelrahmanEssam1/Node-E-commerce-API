@@ -10,10 +10,10 @@ const couponRoutes = require('./CouponsRouter');
 const orderRoutes = require('./OrdersRouter');
 
 router.use('/', authRoutes)
-router.use('/users', userRoutes)
+router.use('/user', userRoutes)
 router.use('/products', productRoutes)
-router.use('/carts', cartRoutes)
-router.use('/rates', rateRoutes)
+router.use('/cart', cartRoutes)
+router.use('/rate', rateRoutes)
 router.use('/coupons', couponRoutes)
 router.use('/orders', orderRoutes)
 
