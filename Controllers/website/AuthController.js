@@ -3,6 +3,7 @@ require('dotenv').config();
 const User = require('./../../Models/user')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { send } = require('./../../helpers/mailer');
 const secretToken = process.env.JWT_SECRET_WEBSITE
 
 //=========== Helper Functions ==============
@@ -38,6 +39,18 @@ const register = async (req, res) => {
     const token = await generateToken(new_user)
 
     new_user.password = undefined;
+
+    const mailData = {
+        from: process.env.MAIL_FROM_ADDRESS,
+        to: `${new_user.email}`,
+        subject: 'Thank YOu',
+        html: ` <h1> Hi ${new_user.name} </h1> <br>,
+                <h3> Thanks for being part of our community/ anniversary </h3> <br>                
+                <p> thanks, </p>
+        `,
+    }
+
+    send(mailData)
 
     return res.status(201).send({
         code: 201,

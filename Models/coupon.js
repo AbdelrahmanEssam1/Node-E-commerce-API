@@ -3,9 +3,10 @@ var mongoose = require('mongoose');
 const couponSchema = new mongoose.Schema({
     code: String,
     value: Number,
-    min_order: Number,
-    max_order: Number,
-    percentage: Boolean,
+    percentage: {
+        type: Boolean,
+        default: false
+    },
     expire: Date,
 }, {timestamps: true});
   

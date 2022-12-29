@@ -5,8 +5,18 @@ const User = new mongoose.Schema({
   photo: String,
   email: String,
   password: String,
-  token: String,
-  banned: Boolean,
+  banned: {
+    type: Boolean,
+    default: false
+  },
+  type: {
+    type: String,
+    default: "user"
+  },
+  balance: {
+    type: Number,
+    default: 50000
+  }
   }, {timestamps: true});
 
 module.exports = mongoose.model('User', User);

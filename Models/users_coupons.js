@@ -1,19 +1,18 @@
 var mongoose = require('mongoose');
 
-const rateSchema = new mongoose.Schema({
+const usersCouponsSchema = new mongoose.Schema({
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
       index: true,
       required: true
     },
-    product_id: {
+    coupon_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "products",
+      ref: "coupons",
       index: true,
       required: true
     },
-    rate: Number
   }, {timestamps: true});
   
-module.exports = mongoose.model('Rate', rateSchema);
+module.exports = mongoose.model('usersCoupons', usersCouponsSchema);

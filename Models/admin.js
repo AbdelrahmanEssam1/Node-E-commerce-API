@@ -5,8 +5,14 @@ const adminSchema = new mongoose.Schema({
     photo: String,
     email: String,
     password: String,
-    token: String,
-    role: Number,
+    type: {
+        type: String,
+        default: "admin"
+    },
+    role: {
+        type: Number,
+        default: 0
+    },
 }, {timestamps: true} );
   
 module.exports = mongoose.model('Admin', adminSchema);

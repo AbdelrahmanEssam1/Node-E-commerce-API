@@ -74,7 +74,15 @@ const forgetPassword = async (req, res) => {
 }
 
 const resetPassword = async (req, res) => {
-    const { token, new_password } = req.body
+    const { token, password, password_confirmation } = req.body
+
+    if (password !== password_confirmation) {
+        return res.status(400).send({
+            code: 400,
+            success: false,
+            message: "Passwords doesn't match"
+        })
+    }
 
     const data = await ResetPassword.findOne({ token: token })
     if (!data) {
@@ -102,7 +110,7 @@ const resetPassword = async (req, res) => {
         })
     }
 
-    await User.updateOne({email: data.email}, { password: await hash(new_password) })
+    await User.updateOne({email: data.email}, { password: await hash(password) })
 
     const authToken = await generateToken(exist_user)
     return res.status(200).send({
